@@ -97,3 +97,34 @@ describe('200: GET /api/reviews', () => {
         })    
     });
 });
+
+describe('200: GET api/reviews/:review_id', () => {
+    it('should respond with a single review object', () => {
+        return request(app)
+            .get("/api/reviews/3")
+            .expect(200)
+            .then((response) => {
+                const arr = response.body.review
+                expect(arr.length).toBe(1)
+            })
+    });
+    it('the returned object should contain all the correct keys', () => {
+        return request(app)
+            .get("/api/reviews/3")
+            .expect(200)
+            .then((response) => {
+                const arr = response.body.review
+                expect(arr[0]).toMatchObject({
+                        review_id: expect.any(Number),
+                        owner: expect.any(String),
+                        title: expect.any(String),
+                        category: expect.any(String),
+                        review_img_url: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: expect.any(Number),
+                        designer: expect.any(String),
+                        review_body: expect.any(String),
+                })
+            })
+    });
+});

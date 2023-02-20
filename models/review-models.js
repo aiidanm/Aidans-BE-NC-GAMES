@@ -10,3 +10,25 @@ exports.getAllReviews = () => {
   `);
 };
 
+exports.getReviewByID = (inputId) => {
+  if (isNaN(Number(inputId)) === true) {
+    return Promise.reject({ status: 400, msg: "bad request" });
+  } else {
+    return db
+      .query(
+        `
+    SELECT * FROM reviews 
+    WHERE review_id = $1
+    `,
+        [inputId]
+      )
+      .then((response) => {
+        const arr = response.rows;
+        if (arr.length === 0) {
+          return Promise.reject({ status: 404, msg: "id does not exist" });
+        } else {
+          return response;
+        }
+      });
+  }
+};
