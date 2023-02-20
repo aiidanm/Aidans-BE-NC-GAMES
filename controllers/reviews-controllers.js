@@ -9,3 +9,4 @@ exports.fetchAllReviews = (req, res, next) => {
       next(error);
     });
 };
+
