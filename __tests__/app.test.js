@@ -45,3 +45,45 @@ describe('200: GET /api/categories', () => {
             })
     });
 });
+
+describe('200: GET /api/reviews', () => {
+    it('should return an array of all review objects', () => {
+        return request(app)
+            .get("/api/reviews")
+            .expect(200)
+            .then((response) => {
+                expect(response.body.reviews).toBeInstanceOf(Array)
+            })
+    });
+    it('response array should match the length of the test data', () => {
+        return request(app)
+            .get("/api/reviews")
+            .expect(200)
+            .then((response) => {
+                console.log(response.body.reviews)
+                const arr = response.body.reviews
+                expect(arr.length).toBe(13)
+            })
+    });
+    it('each item in the returned array should contain the correct keys', () => {
+        return request(app)
+            .get("/api/reviews")
+            .expect(200)
+            .then((response) => {
+                const arr = response.body.reviews
+                arr.forEach((review) => {
+                    expect(review).toMatchObject({
+                        owner: expect.any(String),
+                        title: expect.any(String),
+                        review_id: expect.any(Number),
+                        category: expect.any(String),
+                        review_img_url: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: expect.any(Number),
+                        designer: expect.any(String),
+                        comment_count: expect.any(Number),
+                    })
+                })
+            })
+    });
+});
