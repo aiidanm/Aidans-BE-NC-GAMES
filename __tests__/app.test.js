@@ -18,15 +18,24 @@ describe('200: GET /api/categories', () => {
         .get("/api/categories")
         .expect(200)
         .then((response) => {
-            expect(Array.isArray(response.body)).toBe(true)
+            expect(Array.isArray(response.body.categories)).toBe(true)
         })
+    });
+    it('response array should be the correct length as the data', () => {
+        return request(app)
+            .get("/api/categories")
+            .expect(200)
+            .then((response) => {
+                const arr = response.body.categories
+                expect(arr.length).toBe(4)
+            })
     });
     it('each item in the returned array should contain a key of slug and description ', () => {
         return request(app)
             .get("/api/categories")
             .expect(200)
             .then((response) => {
-                const arr = response.body
+                const arr = response.body.categories
                 arr.forEach((category) => {
                     expect(category).toMatchObject({
                         slug: expect.any(String),
