@@ -14,6 +14,25 @@ afterAll(() => {
 
 describe('200: GET /api/categories', () => {
     it('should respond with an array of categories', () => {
-        
+        return request(app)
+        .get("/api/categories")
+        .expect(200)
+        .then((response) => {
+            expect(Array.isArray(response.body)).toBe(true)
+        })
+    });
+    it('each item in the returned array should contain a key of slug and description ', () => {
+        return request(app)
+            .get("/api/categories")
+            .expect(200)
+            .then((response) => {
+                const arr = response.body
+                arr.forEach((category) => {
+                    expect(category).toMatchObject({
+                        slug: expect.any(String),
+                        description: expect.any(String),
+                    })
+                })
+            })
     });
 });
