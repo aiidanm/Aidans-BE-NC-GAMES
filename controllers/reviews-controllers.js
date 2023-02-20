@@ -6,6 +6,6 @@ exports.fetchAllReviews = (req, res, next) => {
       res.status(200).send({ reviews: reviews.rows });
     })
     .catch((error) => {
-      next();
+      next(error);
     });
 };

@@ -3,10 +3,12 @@ const db = require("../db/connection")
 const app = require("../app")
 const data = require("../db/data/test-data/index")
 const seed = require("../db/seeds/seed")
+ 
 
 beforeEach(() => {
     return seed(data)
 })
+
 afterAll(() => {
     return db.end()
 })
@@ -60,7 +62,6 @@ describe('200: GET /api/reviews', () => {
             .get("/api/reviews")
             .expect(200)
             .then((response) => {
-                console.log(response.body.reviews)
                 const arr = response.body.reviews
                 expect(arr.length).toBe(13)
             })
@@ -85,5 +86,14 @@ describe('200: GET /api/reviews', () => {
                     })
                 })
             })
+    });
+    it('should return the reviews sorted in date descending order', () => {
+        return request(app)
+        .get("/api/reviews")
+        .expect(200)
+        .then((response) => {
+            const arr = response.body.reviews
+            expect(arr).toBeSortedBy('created_at', {descending: true})
+        })    
     });
 });
