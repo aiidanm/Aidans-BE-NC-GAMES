@@ -96,7 +96,7 @@ describe("200: GET /api/reviews", () => {
   });
 });
 
-describe.only("200: GET /api/reviews/:review_id/comments", () => {
+describe("200: GET /api/reviews/:review_id/comments", () => {
   it("should return an array of comments", () => {
     return request(app)
       .get("/api/reviews/3/comments")
@@ -131,5 +131,14 @@ describe.only("200: GET /api/reviews/:review_id/comments", () => {
         const arr = response.body.comments;
         expect(arr).toBeSortedBy("created_at", { descending: true });
       });
+  });
+  it.only('should return an empty array if passed a review_id that is correct and exists but does not have any comments attached', () => {
+    return request(app)
+      .get("/api/reviews/1/comments")
+      .expect(200)
+      .then((response) => {
+        const arr = response.body.comments
+        expect(arr.length).toBe(0)
+      })
   });
 });
