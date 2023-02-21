@@ -15,9 +15,9 @@ afterAll(() => {
 describe("404 incorrect endpoint", () => {
   test("should give a 404 error when an incorrect endpoint is provided", () => {
     return request(app)
-      .get("/api/asdjaisdj")
+      .get("/aasdjaisdj")
       .expect(404)
-      .then((response) => {});
+      .then((response) => {console.log(response)});
   });
 });
 
