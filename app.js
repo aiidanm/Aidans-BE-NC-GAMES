@@ -12,6 +12,7 @@ const {
   handle500Errors,
   handleIncorrectReviewID,
   handleIncorrectUsername,
+  handleCustomErrors
 } = require("./controllers/errorControllers");
 
 const { fetchReviewsComments } = require("./controllers/comments-controllers");
@@ -32,11 +33,8 @@ app.post("/api/reviews/:review_id/comments",PostNewComment)
 
 app.all("*", handleIncorrectEndpointErrors)
 
-app.use(handle400Errors)
 
-app.use(handleIncorrectUsername)
-
-app.use(handleIncorrectReviewID);
+app.use(handleCustomErrors)
 
 app.use(handle500Errors);
 

@@ -257,14 +257,14 @@ describe('201: POST: should add a comment to the review', () => {
         .send({username: "Aidan", body: "i hate this review"})
         .expect(404)
     });
-    it('404: POST: should return a 404 if the body is not a valid string', () => {
+    it('400: POST: should return a 400 if the body is not a valid string', () => {
         return request(app)
         .post("/api/reviews/3/comments")
         .send({username: "bainesface", body: 0})
-        .expect(404)
+        .expect(400)
         .then((response) => {
           const msg = response.body.msg
-          expect(msg).toBe("comment body needs to be a string")
+          expect(msg).toBe("body needs to be a string")
         })
     });
   });
