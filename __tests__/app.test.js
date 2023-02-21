@@ -97,3 +97,23 @@ describe('200: GET /api/reviews', () => {
         })    
     });
 });
+
+describe.only('204: POST: should add a comment to the review', () => {
+  it('should respond with the posted comment', () => {
+    const testComment = {username: "bainesface", body: "i disagree with this review"}
+  return request(app)
+    .post("/api/reviews/1/comments")
+    .send(testComment)
+    .expect(201)
+    .then(({body}) => {
+      expect(body.comment).toMatchObject({
+        author: expect.any(String),
+        body: "i disagree with this review",
+        comment_id: expect.any(Number),
+        created_at: expect.any(String),
+        review_id: 1,
+        votes: 0,
+      })
+    })
+  });
+});
