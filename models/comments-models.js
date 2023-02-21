@@ -1,6 +1,7 @@
 const db = require("../db/connection");
 
 exports.getReviewsComments = (review_id) => {
+    
   if (isNaN(Number(review_id)) === true) {
     return Promise.reject({ status: 400, msg: "bad request" });
   } else {

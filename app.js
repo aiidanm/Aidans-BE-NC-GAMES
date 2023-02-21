@@ -14,8 +14,9 @@ app.get("/api/reviews", fetchAllReviews);
 
 app.get("/api/reviews/:review_id/comments", fetchReviewsComments);
 
+app.use(handle404Errors);
+
 app.use(handle500Errors);
 
-app.all("/*", handle404Errors);
 
 module.exports = app;
