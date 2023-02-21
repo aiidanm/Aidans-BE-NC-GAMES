@@ -96,23 +96,83 @@ describe("200: GET /api/reviews", () => {
   });
 });
 
-describe("200: GET api/reviews/:review_id", () => {
-  it("should respond with a single review object", () => {
+describe("200: GET /api/reviews/:review_id/comments", () => {
+  it("should return an array of comments", () => {
     return request(app)
-      .get("/api/reviews/3")
+      .get("/api/reviews/3/comments")
       .expect(200)
       .then((response) => {
-        const arr = response.body.review;
-        expect(arr.length).toBe(1);
+        expect(response.body.comments).toBeInstanceOf(Array);
       });
   });
+  it("should contain comment objects that contain the correct keys", () => {
+    return request(app)
+      .get("/api/reviews/3/comments")
+      .expect(200)
+      .then((response) => {
+        const arr = response.body.comments;
+        arr.forEach((comment) => {
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            body: expect.any(String),
+            review_id: 3,
+            author: expect.any(String),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+          });
+        });
+      });
+  });
+  it("should return the comments sorted by most recent frst", () => {
+    return request(app)
+      .get("/api/reviews/3/comments")
+      .expect(200)
+      .then((response) => {
+        const arr = response.body.comments;
+        expect(arr).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  it('should return an empty array if passed a review_id that is correct and exists but does not have any comments attached', () => {
+    return request(app)
+      .get("/api/reviews/1/comments")
+      .expect(200)
+      .then((response) => {
+        const arr = response.body.comments
+        expect(arr.length).toBe(0)
+      })
+  });
+  describe('ERRORS', () => {
+    it('should respond with a 404 error if the user inputs a review id that does not exist', () => {
+      return request(app)
+        .get("/api/reviews/100/comments")
+        .expect(404)
+        .then(({body}) => {
+          expect(body.msg).toBe("review id does not exist")
+        })
+    });
+    it('should respond with a 400 error if the user does not input a number', () => {
+      return request(app)
+        .get("/api/reviews/aidan/comments")
+        .expect(400)
+        .then(({body}) => {
+          expect(body.msg).toBe("bad request")
+        })
+    });
+  });
+
+
+
+
+
+})
+
+describe("200: GET api/reviews/:review_id", () => {
   it("the returned object should contain all the correct keys", () => {
     return request(app)
       .get("/api/reviews/3")
       .expect(200)
       .then((response) => {
-        const arr = response.body.review;
-        expect(arr[0]).toMatchObject({
+        expect(response.body.review).toMatchObject({
           review_id: expect.any(Number),
           owner: expect.any(String),
           title: expect.any(String),
@@ -152,7 +212,7 @@ describe("400 bad request incorrect id type", () => {
   });
 });
 
-describe('204: POST: should add a comment to the review', () => {
+describe('201: POST: should add a comment to the review', () => {
   it('should respond with the posted comment', () => {
     const testComment = {username: "bainesface", body: "i disagree with this review"}
   return request(app)
@@ -160,7 +220,6 @@ describe('204: POST: should add a comment to the review', () => {
     .send(testComment)
     .expect(201)
     .then(({body}) => {
-      console.log(body)
       expect(body.comment).toMatchObject({
         author: expect.any(String),
         body: "i disagree with this review",
@@ -171,7 +230,7 @@ describe('204: POST: should add a comment to the review', () => {
       })
     })
   });
-  describe.only('Error handling', () => {
+  describe('Error handling', () => {
     it('400: POST: should return a 400 error when given a id that is not a number', () => {
       return request(app)
         .post("/api/reviews/asdj/comments")
@@ -196,8 +255,17 @@ describe('204: POST: should add a comment to the review', () => {
         return request(app)
         .post("/api/reviews/3/comments")
         .send({username: "Aidan", body: "i hate this review"})
-        .expect(500)
-        
+        .expect(404)
+    });
+    it('404: POST: should return a 404 if the body is not a valid string', () => {
+        return request(app)
+        .post("/api/reviews/3/comments")
+        .send({username: "bainesface", body: 0})
+        .expect(404)
+        .then((response) => {
+          const msg = response.body.msg
+          expect(msg).toBe("comment body needs to be a string")
+        })
     });
   });
 });

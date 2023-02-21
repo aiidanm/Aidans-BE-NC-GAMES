@@ -11,7 +11,6 @@ exports.getAllReviews = () => {
 };
 
 exports.getReviewByID = (inputId) => {
-  
   if (isNaN(Number(inputId)) === true) {
     return Promise.reject("id provided is not a number");
   } else {
@@ -28,7 +27,7 @@ exports.getReviewByID = (inputId) => {
         if (arr.length === 0) {
           return Promise.reject({ status: 404, msg: "id does not exist" });
         } else {
-          return response;
+          return response.rows[0];
         }
       });
   }

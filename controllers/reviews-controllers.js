@@ -14,12 +14,13 @@ exports.fetchAllReviews = (req, res, next) => {
 exports.PostNewComment = (req, res, next) => {
   const { review_id } = req.params;
   const comment = req.body;
+
   const ReviewPromise = getReviewByID(review_id);
   const postCommentPromise = PostComment(review_id, comment);
-  
+
   Promise.all([ReviewPromise, postCommentPromise])
     .then((response) => {
-      const comment = response.rows[0];
+      const comment = response[1].rows[0];
       res.status(201).send({ comment });
     })
     .catch((error) => {
@@ -27,13 +28,12 @@ exports.PostNewComment = (req, res, next) => {
     });
 };
 
-
 exports.fetchSingleReview = (req, res, next) => {
   const { review_id } = req.params;
 
   getReviewByID(review_id)
     .then((response) => {
-      res.status(200).send({ review: response.rows });
+      res.status(200).send({ review: response });
     })
     .catch((error) => {
       next(error);

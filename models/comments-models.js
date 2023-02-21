@@ -10,3 +10,12 @@ exports.PostComment = (review_id, comment) => {
             RETURNING *;
     `, [comment.body,comment.username, review_id])
 }
+
+exports.getReviewsComments = (review_id) => {
+    return db
+      .query(
+        `SELECT * FROM comments WHERE review_id = $1 ORDER BY created_at DESC;`,
+        [review_id]
+      )
+};
+
