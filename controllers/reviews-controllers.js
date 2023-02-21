@@ -1,5 +1,6 @@
-const { getAllReviews } = require("../models/review-models");
 const { PostComment } = require("../models/comments-models");
+const { getAllReviews, getReviewByID } = require("../models/review-models");
+
 exports.fetchAllReviews = (req, res, next) => {
   getAllReviews()
     .then((reviews) => {
@@ -13,20 +14,28 @@ exports.fetchAllReviews = (req, res, next) => {
 exports.PostNewComment = (req, res, next) => {
   const { review_id } = req.params;
   const comment = req.body;
-
-  PostComment(review_id, comment).then((response) => {
-    const comment = response.rows[0];
-    res.status(201).send({ comment });
-  });
+  const ReviewPromise = getReviewByID(review_id);
+  const postCommentPromise = PostComment(review_id, comment);
+  
+  Promise.all([ReviewPromise, postCommentPromise])
+    .then((response) => {
+      const comment = response.rows[0];
+      res.status(201).send({ comment });
+    })
+    .catch((error) => {
+      next(error);
+    });
 };
 
-// const ReviewPromise = getReviewByID(review_id);
-// const postCommentPromise = PostComment(review_id, comment);
 
-// Promise.all([ReviewPromise, postCommentPromise])
-//   .then((response) => {
+exports.fetchSingleReview = (req, res, next) => {
+  const { review_id } = req.params;
 
-//   })
-//   .catch((error) => {
-//     next(error);
-//   });
+  getReviewByID(review_id)
+    .then((response) => {
+      res.status(200).send({ review: response.rows });
+    })
+    .catch((error) => {
+      next(error);
+    });
+};
