@@ -128,3 +128,20 @@ describe('200: GET api/reviews/:review_id', () => {
             })
     });
 });
+
+describe('404:', () => {
+  test("should respond with a 404 msg when the user enters a review id that is not in the database", () => {
+    return request(app).get("/api/reviews/20").expect(404);
+  });
+  test("should give a 404 error when an incorrect endpoint is provided", () => {
+    return request(app)
+      .get("/aasdjaisdj")
+      .expect(404)
+  });
+});
+
+describe("400 bad request incorrect id type", () => {
+  test("should return a 400 error if user does not provide a number to the endpoint", () => {
+    return request(app).get("/api/reviews/aidansreview").expect(400);
+  });
+});

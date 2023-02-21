@@ -20,7 +20,7 @@ app.get("/api/reviews", fetchAllReviews);
 
 app.get("/api/reviews/:review_id", fetchSingleReview);
 
-app.use(handleIncorrectEndpointErrors);
+app.all("*", handleIncorrectEndpointErrors)
 
 app.use(handleIncorrectReviewID);
 app.use(handle400Errors);

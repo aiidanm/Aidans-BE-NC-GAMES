@@ -12,7 +12,6 @@ exports.handleIncorrectReviewID = (error, req, res, next) => {
 
 exports.handle400Errors = (error, req, res, next) => {
     if (error === "id provided is not a number") {
-        console.log(error.msg);
         res.status(400).send({ msg: "bad request" });
     } else {
         next(error);
