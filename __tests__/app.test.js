@@ -141,6 +141,29 @@ describe("200: GET /api/reviews/:review_id/comments", () => {
         expect(arr.length).toBe(0)
       })
   });
+  describe('ERRORS', () => {
+    it('should respond with a 404 error if the user inputs a review id that does not exist', () => {
+      return request(app)
+        .get("/api/reviews/100/comments")
+        .expect(404)
+        .then(({body}) => {
+          expect(body.msg).toBe("review id does not exist")
+        })
+    });
+    it('should respond with a 400 error if the user does not input a number', () => {
+      return request(app)
+        .get("/api/reviews/aidan/comments")
+        .expect(400)
+        .then(({body}) => {
+          expect(body.msg).toBe("bad request")
+        })
+    });
+  });
+
+
+
+
+
 })
 
 describe("200: GET api/reviews/:review_id", () => {
