@@ -132,7 +132,7 @@ describe("200: GET /api/reviews/:review_id/comments", () => {
         expect(arr).toBeSortedBy("created_at", { descending: true });
       });
   });
-  it.only('should return an empty array if passed a review_id that is correct and exists but does not have any comments attached', () => {
+  it('should return an empty array if passed a review_id that is correct and exists but does not have any comments attached', () => {
     return request(app)
       .get("/api/reviews/1/comments")
       .expect(200)
