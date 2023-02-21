@@ -98,7 +98,7 @@ describe('200: GET /api/reviews', () => {
     });
 });
 
-describe.only('204: POST: should add a comment to the review', () => {
+describe('204: POST: should add a comment to the review', () => {
   it('should respond with the posted comment', () => {
     const testComment = {username: "bainesface", body: "i disagree with this review"}
   return request(app)
