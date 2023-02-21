@@ -141,4 +141,50 @@ describe("200: GET /api/reviews/:review_id/comments", () => {
         expect(arr.length).toBe(0)
       })
   });
+})
+
+describe("200: GET api/reviews/:review_id", () => {
+  it("the returned object should contain all the correct keys", () => {
+    return request(app)
+      .get("/api/reviews/3")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.review).toMatchObject({
+          review_id: expect.any(Number),
+          owner: expect.any(String),
+          title: expect.any(String),
+          category: expect.any(String),
+          review_img_url: expect.any(String),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+          designer: expect.any(String),
+          review_body: expect.any(String),
+        });
+      });
+  });
+});
+
+describe("404:", () => {
+  test("should respond with a 404 msg when the user enters a review id that is not in the database", () => {
+    return request(app).get("/api/reviews/20").expect(404).then(({body}) => {
+      expect(body.msg).toBe("review id does not exist")
+    })
+  });
+  test("should give a 404 error when an incorrect endpoint is provided", () => {
+    return request(app).get("/aasdjaisdj").expect(404).then(({body}) => {
+      expect(body.msg).toBe("incorrect endpoint")
+    })
+  });
+});
+
+describe("400 bad request incorrect id type", () => {
+  test("should return a 400 error if user does not provide a number to the endpoint", () => {
+    return request(app)
+      .get("/api/reviews/aidansreview")
+      .expect(400)
+      .then((response) => {
+        const msg = response.body.msg
+        expect(msg).toBe("bad request");
+      });
+  });
 });

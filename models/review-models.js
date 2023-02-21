@@ -11,7 +11,6 @@ exports.getAllReviews = () => {
 };
 
 exports.getReviewByID = (inputId) => {
-
   if (isNaN(Number(inputId)) === true) {
     return Promise.reject("id provided is not a number");
   } else {

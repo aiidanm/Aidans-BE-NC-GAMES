@@ -1,4 +1,3 @@
-
 exports.handleIncorrectEndpointErrors = (req, res, next) => {
   res.status(404).send({ msg: "incorrect endpoint" });
 };
@@ -18,8 +17,10 @@ exports.handle400Errors = (error, req, res, next) => {
     next(error);
   }
 };
-
 exports.handle500Errors = (error, req, res, next) => {
-  console.log(error);
-  res.status(500).send({ msg: "Server Error" });
+  if (error.status === 500) {
+    res.status(500).send({ msg: "Server Error" });
+  } else {
+    next(error);
+  }
 };
