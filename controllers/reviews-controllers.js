@@ -15,7 +15,7 @@ exports.fetchSingleReview = (req, res, next) => {
 
   getReviewByID(review_id)
     .then((response) => {
-      res.status(200).send({ review: response.rows });
+      res.status(200).send({ review: response });
     })
     .catch((error) => {
       next(error);

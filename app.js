@@ -1,18 +1,19 @@
 const express = require("express");
 const { fetchallCategories } = require("./controllers/categoryControllers");
 const {
-  fetchAllReviews,
   fetchSingleReview,
+  fetchAllReviews
 } = require("./controllers/reviews-controllers");
 const {
   handleIncorrectEndpointErrors,
-  handleIncorrectReviewID,
   handle400Errors,
   handle500Errors,
+  handleIncorrectReviewID
 } = require("./controllers/errorControllers");
 
-const app = express();
+const { fetchReviewsComments } = require("./controllers/comments-controllers");
 
+const app = express();
 
 app.get("/api/categories", fetchallCategories);
 
@@ -20,10 +21,14 @@ app.get("/api/reviews", fetchAllReviews);
 
 app.get("/api/reviews/:review_id", fetchSingleReview);
 
+app.get("/api/reviews/:review_id/comments",fetchReviewsComments)
+
 app.all("*", handleIncorrectEndpointErrors)
 
+app.use(handle400Errors)
+
 app.use(handleIncorrectReviewID);
-app.use(handle400Errors);
+
 app.use(handle500Errors);
 
 module.exports = app;
