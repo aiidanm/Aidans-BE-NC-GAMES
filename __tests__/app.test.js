@@ -257,6 +257,17 @@ describe('200: Patch: should respond with the updated review object ', () => {
             expect(review.votes).toBe(-96)
           })
     });
+    it('should still work and respond with review when there are extra keys in the object', () => {
+      const voteObj = {inc_votes: -101, msg: "my votes to increase!"}
+      return request(app)
+          .patch("/api/reviews/3")
+          .send(voteObj)
+          .expect(200)
+          .then((response) => {
+            const review = response.body.review
+            expect(review.votes).toBe(-96)
+          })
+    });
     describe('PATCH: Error handling', () => {
       it('404: should respond with a 404 if passed an incorrect reviewID', () => {
         const voteObj = {inc_votes: -101}
@@ -298,6 +309,5 @@ describe('200: Patch: should respond with the updated review object ', () => {
             expect(response.body.msg).toBe("need to provide a number")
           })
       });
-
     });
 });
