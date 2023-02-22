@@ -11,6 +11,8 @@ const {
   handleIncorrectReviewID
 } = require("./controllers/errorControllers");
 
+const {fetchAllUsers} = require("./controllers/users-controllers")
+
 const { fetchReviewsComments } = require("./controllers/comments-controllers");
 
 const app = express();
@@ -22,6 +24,8 @@ app.get("/api/reviews", fetchAllReviews);
 app.get("/api/reviews/:review_id", fetchSingleReview);
 
 app.get("/api/reviews/:review_id/comments",fetchReviewsComments)
+
+app.get("/api/users", fetchAllUsers)
 
 app.all("*", handleIncorrectEndpointErrors)
 
