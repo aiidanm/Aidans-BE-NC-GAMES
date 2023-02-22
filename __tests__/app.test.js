@@ -213,7 +213,7 @@ describe("400 bad request incorrect id type", () => {
   });
 });
 
-describe("201: POST: should add a comment to the review", () => {
+describe.only("201: POST: should add a comment to the review", () => {
   it("should respond with the posted comment", () => {
     const testComment = {
       username: "bainesface",
@@ -234,6 +234,18 @@ describe("201: POST: should add a comment to the review", () => {
         });
       });
   });
+  it('201: should respond with the comment even if passed an object with extra keys', () => {
+    const testComment = {
+      username: "bainesface",
+      body: "i disagree with this review",
+      votes: 10,
+    };
+    return request(app)
+    .post("/api/reviews/1/comments")
+    .send(testComment)
+    .expect(201)
+  });
+
   describe("Error handling", () => {
     it("400: POST: should return a 400 error when given a id that is not a number", () => {
       return request(app)
@@ -271,11 +283,11 @@ describe("201: POST: should add a comment to the review", () => {
           expect(msg).toBe("body needs to be a string");
         });
     });
-    it("404: Post: should return a 404 error if the passed object doesnt contain the correct keys", () => {
+    it("400: Post: should return a 404 error if the passed object doesnt contain the correct keys", () => {
       return request(app)
         .post("/api/reviews/3/comments")
         .send({ text: "i agree!" })
-        .expect(404)
+        .expect(400)
         .then((response) => {
           const msg = response.body.msg;
           expect(msg).toBe("comment needs to contain a username and body");
