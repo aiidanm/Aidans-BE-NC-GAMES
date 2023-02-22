@@ -38,7 +38,6 @@ exports.patchReviewController = (req, res, next) => {
       res.status(200).send({ review });
     })
     .catch((error) => {
-      console.log(error)
       next(error);
     });
 };

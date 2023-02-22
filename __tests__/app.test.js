@@ -223,7 +223,7 @@ describe('200: Patch: should respond with the updated review object ', () => {
           .then((response) => {
             const review = response.body.review
             expect(review).toMatchObject({
-              review_id: expect.any(Number),
+              review_id: 3,
               owner: expect.any(String),
               title: expect.any(String),
               category: expect.any(String),
