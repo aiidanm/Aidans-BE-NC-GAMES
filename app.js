@@ -8,10 +8,7 @@ const {
 } = require("./controllers/reviews-controllers");
 const {
   handleIncorrectEndpointErrors,
-  handle400Errors,
   handle500Errors,
-  handleIncorrectReviewID,
-  handleIncorrectUsername,
   handleCustomErrors
 } = require("./controllers/errorControllers");
 

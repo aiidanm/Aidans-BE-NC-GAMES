@@ -20,6 +20,8 @@ exports.handleCustomErrors = (error, req, res, next) => {
     res.status(404).send({ msg: "review id does not exist" });
   } else if (error === "body is not a string"){
     res.status(400).send({msg: "body needs to be a string"})
+  } else if (error === "body needs correct keys"){
+    res.status(404).send({msg: "comment needs to contain a username and body"})
   } else {
     next(error);
   }
