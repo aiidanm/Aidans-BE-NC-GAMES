@@ -1,5 +1,7 @@
+
 const { PostComment } = require("../models/comments-models");
-const { getAllReviews, getReviewByID } = require("../models/review-models");
+
+const { getAllReviews, getReviewByID, patchReviewModel } = require("../models/review-models");
 
 exports.fetchAllReviews = (req, res, next) => {
   getAllReviews()
@@ -34,6 +36,22 @@ exports.fetchSingleReview = (req, res, next) => {
   getReviewByID(review_id)
     .then((response) => {
       res.status(200).send({ review: response });
+    })
+    .catch((error) => {
+      next(error);
+    });
+};
+
+exports.patchReviewController = (req, res, next) => {
+  const { review_id } = req.params;
+  const body = req.body;
+  const patchPromise = patchReviewModel(review_id, body);
+  const reviewIDPromise = getReviewByID(review_id);
+  
+  Promise.all([reviewIDPromise, patchPromise])
+    .then((response) => {
+      const review = response[1]
+      res.status(200).send({ review });
     })
     .catch((error) => {
       next(error);
