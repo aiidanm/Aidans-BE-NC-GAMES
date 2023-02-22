@@ -32,3 +32,27 @@ exports.getReviewByID = (inputId) => {
       });
   }
 };
+
+exports.patchReviewModel = (review_id, body) => {
+  if(body.hasOwnProperty("inc_votes") === false ){
+    return Promise.reject("no inc_vote")
+  } else if (typeof body.inc_votes !== "number"){
+    return Promise.reject("inc votes needs to be a number")
+  } else {
+    const voteAmount = body.inc_votes;
+  return db.query(`
+    UPDATE reviews
+    SET votes = VOTES + $1
+    WHERE review_id = $2
+    RETURNING *;
+  `, [voteAmount, review_id]).then((response) => {
+    const arr = response.rows
+    if (arr.length === 0){
+      return Promise.reject({ status: 404, msg: "id does not exist" });
+    } else {
+      return response.rows[0]
+    }
+  })
+  }
+  
+}
