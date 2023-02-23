@@ -26,3 +26,18 @@ exports.getReviewsComments = (review_id) => {
     [review_id]
   );
 };
+
+exports.deleteCommentByID = (comment_id) => {
+  if(isNaN(Number(comment_id)) === true){
+    return Promise.reject("comment id provided is not a number")
+  } else {
+    return db.query(`DELETE FROM comments WHERE comments_id = $1`, [comment_id]).then((response) => {
+      const arr = response.rows
+      if (arr.length === 0) {
+        return Promise.reject("comment id does not exist")
+      } else {
+        return response.rows[0]
+      }
+    })
+  }
+}

@@ -1,4 +1,4 @@
-const { getReviewsComments } = require("../models/comments-models");
+const { getReviewsComments, deleteCommentByID } = require("../models/comments-models");
 const { getReviewByID } = require("../models/review-models");
 
 exports.fetchReviewsComments = (req, res, next) => {
@@ -17,3 +17,12 @@ exports.fetchReviewsComments = (req, res, next) => {
       next(error);
     });
 };
+
+exports.deleteCommentByIDController = (req, res, next) => {
+  const {comment_id} = req.params
+
+  deleteCommentByID(comment_id).then((resposne) => {
+    
+  })
+
+}
