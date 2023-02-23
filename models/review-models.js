@@ -61,18 +61,20 @@ exports.getAllReviews = (queries, allowedCategories) => {
 };
 
 exports.getReviewByID = (inputId) => {
-  if (isNaN(Number(inputId)) === true) {
-    return Promise.reject("id provided is not a number");
-  } else {
+  
     return db
       .query(
         `
-    SELECT * FROM reviews 
-    WHERE review_id = $1
+    SELECT reviews.review_id, title, category, designer, owner, review_body, review_img_url,reviews.created_at, reviews.votes, COUNT(comments.review_id)::int AS "comment_count"
+    FROM reviews 
+    LEFT JOIN comments ON reviews.review_id = comments.review_id
+    WHERE reviews.review_id = $1
+    GROUP BY reviews.review_id;
     `,
         [inputId]
       )
       .then((response) => {
+        
         const arr = response.rows;
         if (arr.length === 0) {
           return Promise.reject({ status: 404, msg: "id does not exist" });
@@ -81,7 +83,6 @@ exports.getReviewByID = (inputId) => {
         }
       });
   }
-};
 
 exports.patchReviewModel = (review_id, body) => {
   if (body.hasOwnProperty("inc_votes") === false) {
