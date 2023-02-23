@@ -287,36 +287,46 @@ describe("200: GET api/reviews/:review_id", () => {
         });
       });
   });
-});
 
-describe("404:", () => {
-  test("should respond with a 404 msg when the user enters a review id that is not in the database", () => {
+  it("should now contain a comment_count column with the correct amount of comments on that review", () => {
     return request(app)
-      .get("/api/reviews/20")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("review id does not exist");
-      });
-  });
-  test("should give a 404 error when an incorrect endpoint is provided", () => {
-    return request(app)
-      .get("/aasdjaisdj")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("incorrect endpoint");
-      });
-  });
-});
-
-describe("400 bad request incorrect id type", () => {
-  test("should return a 400 error if user does not provide a number to the endpoint", () => {
-    return request(app)
-      .get("/api/reviews/aidansreview")
-      .expect(400)
+      .get("/api/reviews/3")
+      .expect(200)
       .then((response) => {
-        const msg = response.body.msg;
-        expect(msg).toBe("bad request");
+        expect(response.body.review.comment_count).toBe(3);
       });
+  });
+
+  describe("ERROR HANDLING", () => {
+    describe("404:", () => {
+      test("should respond with a 404 msg when the user enters a review id that is not in the database", () => {
+        return request(app)
+          .get("/api/reviews/20")
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).toBe("review id does not exist");
+          });
+      });
+      test("should give a 404 error when an incorrect endpoint is provided", () => {
+        return request(app)
+          .get("/aasdjaisdj")
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).toBe("incorrect endpoint");
+          });
+      });
+    });
+    describe("400 bad request incorrect id type", () => {
+      test("should return a 400 error if user does not provide a number to the endpoint", () => {
+        return request(app)
+          .get("/api/reviews/aidansreview")
+          .expect(400)
+          .then((response) => {
+            const msg = response.body.msg;
+            expect(msg).toBe("bad request");
+          });
+      });
+    });
   });
 });
 
@@ -536,6 +546,28 @@ describe("200: Patch: should respond with the updated review object ", () => {
 describe('204: DELETE. should respond delete comment and respond with a 204', () => {
     it('should respond with status 204 and delete the comment', () => {
         return request(app)
-          .del("/api/comments/")
+          .delete("/api/comments/2")
+          .expect(204)
+
+    });
+    describe('Error handling', () => {
+        it('404 should respond with 404 error if passed an id that is valid but does not exist', () => {
+          return request(app)
+          .delete("/api/comments/200")
+          .expect(404)
+          .then((response) => {
+            const msg = response.body.msg
+            expect(msg).toBe("comment id does not exist")
+          })
+        });
+        it('should respond with a 400 error if passed a id that is not a string', () => {
+          return request(app)
+          .delete("/api/comments/aidans")
+          .expect(400)
+          .then((response) => {
+            const msg = response.body.msg
+            expect(msg).toBe("bad request")
+          })
+        });
     });
 }); 
