@@ -94,6 +94,113 @@ describe("200: GET /api/reviews", () => {
         expect(arr).toBeSortedBy("created_at", { descending: true });
       });
   });
+  describe("200: QUERIES ", () => {
+    describe("/api/reviews/QUERIES", () => {
+      it("should return reviews array with only reviews of category ", () => {
+        return request(app)
+          .get("/api/reviews?category=euro+game")
+          .expect(200)
+          .then((response) => {
+            const arr = response.body.reviews;
+            arr.forEach((review) => {
+              expect(review.category).toBe("euro game");
+            });
+          });
+      });
+      it("should sort by created_at if not passed anything else", () => {
+        return request(app)
+          .get("/api/reviews?category=euro+game")
+          .expect(200)
+          .then((response) => {
+            const arr = response.body.reviews;
+            expect(arr).toBeSortedBy("created_at", { descending: true });
+          });
+      });
+      it("should allow user to sort by any column name", () => {
+        return request(app)
+          .get("/api/reviews?sort_by=owner")
+          .expect(200)
+          .then((response) => {
+            const arr = response.body.reviews;
+            expect(arr).toBeSortedBy("owner", { descending: true });
+          });
+      });
+      it("should allow user to sort ASC if they want to", () => {
+        return request(app)
+          .get("/api/reviews?order_by=ASC")
+          .expect(200)
+          .then((response) => {
+            const arr = response.body.reviews;
+            expect(arr).toBeSortedBy("created_at", { ascending: true });
+          });
+      });
+      it("should work even when the queries have extra keys that are not needed", () => {
+        return request(app)
+          .get("/api/reviews?category=euro+game&msg=1")
+          .expect(200)
+          .then((response) => {
+            const arr = response.body.reviews;
+            arr.forEach((review) => {
+              expect(review.category).toBe("euro game");
+            });
+          });
+      });
+      it("should allow all 3 queries to work at the same time", () => {
+        return request(app)
+          .get("/api/reviews?category=euro+game&sort_by=owner&order_by=ASC")
+          .expect(200)
+          .then((response) => {
+            const arr = response.body.reviews;
+            arr.forEach((review) => {
+              expect(review.category).toBe("euro game");
+            });
+            expect(arr).toBeSortedBy("owner", { ascending: true });
+          });
+      });
+    });
+  });
+  describe("/api/reviews/queries ERROR handling", () => {
+    it("should respond with a 404 if the category does not exist", () => {
+      return request(app)
+        .get("/api/reviews?category=fun")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("invalid category provided");
+        });
+    });
+    it("should respond with a 400 if the category provided is not a string", () => {
+      return request(app)
+        .get("/api/reviews?category=1")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("category needs to be a string");
+        });
+    });
+    it("should respond with a 404 if the sort_by column does not exist", () => {
+      return request(app)
+        .get("/api/reviews?sort_by=fun")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("invalid sort_by provided");
+        });
+    });
+    it("should respond with a 400 if passed a sort_by that is not a string", () => {
+      return request(app)
+        .get("/api/reviews?sort_by=1")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("sort by needs to be a string");
+        });
+    });
+    it("should respond with a 400 if passed a order by that is neither ASC or DESC", () => {
+      return request(app)
+        .get("/api/reviews?order_by=1")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("order by should be ASC or DESC");
+        });
+    });
+  });
 });
 
 describe("200: GET /api/reviews/:review_id/comments", () => {
@@ -219,6 +326,35 @@ describe("200: GET api/reviews/:review_id", () => {
             expect(msg).toBe("bad request");
           });
       });
+    });
+  });
+});
+
+describe("200: GET /api/users", () => {
+  it("should respond with an array of object containing username, name and avatar_url", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((response) => {
+        const arr = response.body.users;
+        expect(arr.length).toBe(4)
+        arr.forEach((user) => {
+          expect(user).toMatchObject({
+            username: expect.any(String),
+            name: expect.any(String),
+            avatar_url: expect.any(String),
+          });
+        });
+      });
+  });
+  describe("/api/users Error handling", () => {
+    it("404 should respond with 404 if passed an incorrect endpoint", () => {
+      return request(app)
+        .get("/api/user")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("incorrect endpoint");
+        });
     });
   });
 });

@@ -10,8 +10,11 @@ const {
 const {
   handleIncorrectEndpointErrors,
   handle500Errors,
-  handleCustomErrors
+  handleCustomErrors,
+  handleQueryErrors
 } = require("./controllers/errorControllers");
+
+const {fetchAllUsers} = require("./controllers/users-controllers")
 
 const { fetchReviewsComments } = require("./controllers/comments-controllers");
 
@@ -29,11 +32,15 @@ app.get("/api/reviews/:review_id", fetchSingleReview);
 
 app.get("/api/reviews/:review_id/comments",fetchReviewsComments)
 
+app.get("/api/users", fetchAllUsers)
+
 app.patch("/api/reviews/:review_id", patchReviewController)
 
 app.post("/api/reviews/:review_id/comments",PostNewComment)
 
 app.all("*", handleIncorrectEndpointErrors)
+
+app.use(handleQueryErrors)
 
 app.use(handleCustomErrors)
 
