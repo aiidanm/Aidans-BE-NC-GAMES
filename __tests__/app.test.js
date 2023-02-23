@@ -532,3 +532,10 @@ describe("200: Patch: should respond with the updated review object ", () => {
     });
   });
 });
+
+describe('204: DELETE. should respond delete comment and respond with a 204', () => {
+    it('should respond with status 204 and delete the comment', () => {
+        return request(app)
+          .del("/api/comments/")
+    });
+}); 
