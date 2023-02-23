@@ -61,9 +61,7 @@ exports.getAllReviews = (queries, allowedCategories) => {
 };
 
 exports.getReviewByID = (inputId) => {
-  if (isNaN(Number(inputId)) === true) {
-    return Promise.reject("id provided is not a number");
-  } else {
+  
     return db
       .query(
         `
@@ -76,6 +74,7 @@ exports.getReviewByID = (inputId) => {
         [inputId]
       )
       .then((response) => {
+        
         const arr = response.rows;
         if (arr.length === 0) {
           return Promise.reject({ status: 404, msg: "id does not exist" });
@@ -84,7 +83,6 @@ exports.getReviewByID = (inputId) => {
         }
       });
   }
-};
 
 exports.patchReviewModel = (review_id, body) => {
   if (body.hasOwnProperty("inc_votes") === false) {
