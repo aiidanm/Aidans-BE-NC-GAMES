@@ -20,6 +20,7 @@ exports.getAllReviews = (queries, allowedCategories) => {
   }
 
   const allowedOrders = ["ASC", "DESC"];
+  
   const allowedSorts = [
     "review_id",
     "title",

@@ -542,3 +542,23 @@ describe("200: Patch: should respond with the updated review object ", () => {
     });
   });
 });
+
+describe('200: GET /api', () => {
+  it('should return a json object of all the endpoints the api has', () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.endpoints).toMatchObject({
+          "GET /api": expect.any(Object),
+          'GET /api/categories':expect.any(Object),
+          'GET /api/reviews': expect.any(Object),
+          'GET /api/reviews/:id': expect.any(Object),
+          'GET /api/reviews/:id/comments': expect.any(Object),
+          'GET /api/users': expect.any(Object),
+          'PATCH: /api/reviews/id': expect.any(Object),
+          'POST: /api/reviews/id/comments': expect.any(Object),
+        })
+      })
+  });
+});
