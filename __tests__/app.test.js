@@ -213,9 +213,34 @@ describe("400 bad request incorrect id type", () => {
   });
 });
 
-
-
-
+describe("200: GET /api/users", () => {
+  it("should respond with an array of object containing username, name and avatar_url", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((response) => {
+        const arr = response.body.users;
+        expect(arr.length).toBe(4)
+        arr.forEach((user) => {
+          expect(user).toMatchObject({
+            username: expect.any(String),
+            name: expect.any(String),
+            avatar_url: expect.any(String),
+          });
+        });
+      });
+  });
+  describe("/api/users Error handling", () => {
+    it("404 should respond with 404 if passed an incorrect endpoint", () => {
+      return request(app)
+        .get("/api/user")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("incorrect endpoint");
+        });
+    });
+  });
+});
 
 describe("201: POST: should add a comment to the review", () => {
   it("should respond with the posted comment", () => {
@@ -238,16 +263,16 @@ describe("201: POST: should add a comment to the review", () => {
         });
       });
   });
-  it('201: should respond with the comment even if passed an object with extra keys', () => {
+  it("201: should respond with the comment even if passed an object with extra keys", () => {
     const testComment = {
       username: "bainesface",
       body: "i disagree with this review",
       votes: 10,
     };
     return request(app)
-    .post("/api/reviews/1/comments")
-    .send(testComment)
-    .expect(201)
+      .post("/api/reviews/1/comments")
+      .send(testComment)
+      .expect(201);
   });
 
   describe("Error handling", () => {
@@ -300,101 +325,103 @@ describe("201: POST: should add a comment to the review", () => {
   });
 });
 
-describe('200: Patch: should respond with the updated review object ', () => {
-  it('should respond with the correct review when updated', () => {
-    const voteObj = {inc_votes: 1}
-      return request(app)
-        .patch("/api/reviews/3")
-        .send(voteObj)
-        .expect(200)
-        .then((response) => {
-          const review = response.body.review
-          expect(review).toMatchObject({
-            review_id: 3,
-            owner: expect.any(String),
-            title: expect.any(String),
-            category: expect.any(String),
-            review_img_url: expect.any(String),
-            created_at: expect.any(String),
-            votes: expect.any(Number),
-            designer: expect.any(String),
-            review_body: expect.any(String),
-          })
-        })
-  });
-  it('should increase the count correctly when passed a positive number', () => {
-    const voteObj = {inc_votes: 1}
+describe("200: Patch: should respond with the updated review object ", () => {
+  it("should respond with the correct review when updated", () => {
+    const voteObj = { inc_votes: 1 };
     return request(app)
-        .patch("/api/reviews/3")
-        .send(voteObj)
-        .expect(200)
-        .then((response) => {
-          const review = response.body.review
-          expect(review.votes).toBe(6)
-        })
+      .patch("/api/reviews/3")
+      .send(voteObj)
+      .expect(200)
+      .then((response) => {
+        const review = response.body.review;
+        expect(review).toMatchObject({
+          review_id: 3,
+          owner: expect.any(String),
+          title: expect.any(String),
+          category: expect.any(String),
+          review_img_url: expect.any(String),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+          designer: expect.any(String),
+          review_body: expect.any(String),
+        });
+      });
   });
-  it('should decrease the count if passed a negative number', () => {
-    const voteObj = {inc_votes: -101}
+  it("should increase the count correctly when passed a positive number", () => {
+    const voteObj = { inc_votes: 1 };
     return request(app)
-        .patch("/api/reviews/3")
-        .send(voteObj)
-        .expect(200)
-        .then((response) => {
-          const review = response.body.review
-          expect(review.votes).toBe(-96)
-        })
+      .patch("/api/reviews/3")
+      .send(voteObj)
+      .expect(200)
+      .then((response) => {
+        const review = response.body.review;
+        expect(review.votes).toBe(6);
+      });
   });
-  it('should still work and respond with review when there are extra keys in the object', () => {
-    const voteObj = {inc_votes: -101, msg: "my votes to increase!"}
+  it("should decrease the count if passed a negative number", () => {
+    const voteObj = { inc_votes: -101 };
     return request(app)
-        .patch("/api/reviews/3")
-        .send(voteObj)
-        .expect(200)
-        .then((response) => {
-          const review = response.body.review
-          expect(review.votes).toBe(-96)
-        })
+      .patch("/api/reviews/3")
+      .send(voteObj)
+      .expect(200)
+      .then((response) => {
+        const review = response.body.review;
+        expect(review.votes).toBe(-96);
+      });
   });
-  describe('PATCH: Error handling', () => {
-    it('404: should respond with a 404 if passed an incorrect reviewID', () => {
-      const voteObj = {inc_votes: -101}
+  it("should still work and respond with review when there are extra keys in the object", () => {
+    const voteObj = { inc_votes: -101, msg: "my votes to increase!" };
+    return request(app)
+      .patch("/api/reviews/3")
+      .send(voteObj)
+      .expect(200)
+      .then((response) => {
+        const review = response.body.review;
+        expect(review.votes).toBe(-96);
+      });
+  });
+  describe("PATCH: Error handling", () => {
+    it("404: should respond with a 404 if passed an incorrect reviewID", () => {
+      const voteObj = { inc_votes: -101 };
       return request(app)
         .patch("/api/reviews/20")
         .send(voteObj)
         .expect(404)
         .then((response) => {
-          expect(response.body.msg).toBe("review id does not exist")
-        })
+          expect(response.body.msg).toBe("review id does not exist");
+        });
     });
-    it('400: should respond with a 400 error if passed a wrong format review id', () => {
-      const voteObj = {inc_votes: -101}
+    it("400: should respond with a 400 error if passed a wrong format review id", () => {
+      const voteObj = { inc_votes: -101 };
       return request(app)
         .patch("/api/reviews/test")
         .send(voteObj)
         .expect(400)
         .then((response) => {
-          expect(response.body.msg).toBe("bad request")
-        })
+          expect(response.body.msg).toBe("bad request");
+        });
     });
-    it('400: should respond with a 400 error if object does not contain inc_votes', () => {
-      const voteObj = {msg: -101}
+    it("400: should respond with a 400 error if object does not contain inc_votes", () => {
+      const voteObj = { msg: -101 };
       return request(app)
         .patch("/api/reviews/3")
         .send(voteObj)
         .expect(400)
         .then((response) => {
-          expect(response.body.msg).toBe("you need to provide a inc_votes object")
-        })
+          expect(response.body.msg).toBe(
+            "you need to provide a inc_votes object"
+          );
+        });
     });
-    it('400: should respond with a 400 error if the votes is not a number', () => {
-      const voteObj = {inc_votes: "asda"}
+    it("400: should respond with a 400 error if the votes is not a number", () => {
+      const voteObj = { inc_votes: "asda" };
       return request(app)
         .patch("/api/reviews/3")
         .send(voteObj)
         .expect(400)
         .then((response) => {
-          expect(response.body.msg).toBe("need to provide a number")
-        })
+          expect(response.body.msg).toBe("need to provide a number");
+        });
     });
   });
 });
