@@ -1,16 +1,21 @@
 
 const { PostComment } = require("../models/comments-models");
 
-const { getAllReviews, getReviewByID, patchReviewModel } = require("../models/review-models");
+const { getAllReviews, getReviewByID, patchReviewModel, getReviewCategories } = require("../models/review-models");
 
 exports.fetchAllReviews = (req, res, next) => {
-  getAllReviews()
-    .then((reviews) => {
-      res.status(200).send({ reviews: reviews.rows });
-    })
-    .catch((error) => {
-      next(error);
-    });
+  const queries = req.query
+  getReviewCategories().then((response) => {
+    const cats = response.rows.map((item) => item.category)
+    getAllReviews(queries, cats)
+      .then((reviews) => {
+        res.status(200).send({ reviews: reviews.rows });
+      })
+      .catch((error) => {
+        next(error);
+      });
+
+  })
 };
 
 exports.PostNewComment = (req, res, next) => {

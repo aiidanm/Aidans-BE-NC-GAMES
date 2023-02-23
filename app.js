@@ -10,7 +10,8 @@ const {
 const {
   handleIncorrectEndpointErrors,
   handle500Errors,
-  handleCustomErrors
+  handleCustomErrors,
+  handleQueryErrors
 } = require("./controllers/errorControllers");
 
 const {fetchAllUsers} = require("./controllers/users-controllers")
@@ -38,6 +39,8 @@ app.patch("/api/reviews/:review_id", patchReviewController)
 app.post("/api/reviews/:review_id/comments",PostNewComment)
 
 app.all("*", handleIncorrectEndpointErrors)
+
+app.use(handleQueryErrors)
 
 app.use(handleCustomErrors)
 
