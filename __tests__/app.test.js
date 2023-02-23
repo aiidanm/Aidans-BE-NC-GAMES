@@ -179,7 +179,7 @@ describe("200: GET /api/reviews", () => {
     it("should respond with a 404 if the sort_by column does not exist", () => {
       return request(app)
         .get("/api/reviews?sort_by=fun")
-        .expect(404)
+        .expect(400)
         .then((response) => {
           expect(response.body.msg).toBe("invalid sort_by provided");
         });

@@ -36,7 +36,7 @@ exports.handleQueryErrors = (error, req, res, next) => {
   if (error === "category provided is not in array"){
     res.status(404).send({msg: "invalid category provided"})
   } else if (error === "sort by provided is not in array"){
-    res.status(404).send({msg: "invalid sort_by provided"})
+    res.status(400).send({msg: "invalid sort_by provided"})
   } else if (error === "order by provided is not in array"){
     res.status(400).send({msg: "order by should be ASC or DESC"})
   } 
