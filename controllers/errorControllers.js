@@ -31,3 +31,21 @@ exports.handleCustomErrors = (error, req, res, next) => {
     next(error);
   }
 };
+
+exports.handleQueryErrors = (error, req, res, next) => {
+  if (error === "category provided is not in array"){
+    res.status(404).send({msg: "invalid category provided"})
+  } else if (error === "sort by provided is not in array"){
+    res.status(404).send({msg: "invalid sort_by provided"})
+  } else if (error === "order by provided is not in array"){
+    res.status(400).send({msg: "order by should be ASC or DESC"})
+  } 
+  
+  else if (error === "category is invalid type"){
+    res.status(400).send({msg: "category needs to be a string"})
+  } else if (error === "sort by is invalid type"){
+    res.status(400).send({msg: "sort by needs to be a string"})
+  } else {
+    next(error)
+  }
+}

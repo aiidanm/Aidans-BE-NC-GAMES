@@ -94,6 +94,113 @@ describe("200: GET /api/reviews", () => {
         expect(arr).toBeSortedBy("created_at", { descending: true });
       });
   });
+  describe("200: QUERIES ", () => {
+    describe("/api/reviews/QUERIES", () => {
+      it("should return reviews array with only reviews of category ", () => {
+        return request(app)
+          .get("/api/reviews?category=euro+game")
+          .expect(200)
+          .then((response) => {
+            const arr = response.body.reviews;
+            arr.forEach((review) => {
+              expect(review.category).toBe("euro game");
+            });
+          });
+      });
+      it("should sort by created_at if not passed anything else", () => {
+        return request(app)
+          .get("/api/reviews?category=euro+game")
+          .expect(200)
+          .then((response) => {
+            const arr = response.body.reviews;
+            expect(arr).toBeSortedBy("created_at", { descending: true });
+          });
+      });
+      it("should allow user to sort by any column name", () => {
+        return request(app)
+          .get("/api/reviews?sort_by=owner")
+          .expect(200)
+          .then((response) => {
+            const arr = response.body.reviews;
+            expect(arr).toBeSortedBy("owner", { descending: true });
+          });
+      });
+      it("should allow user to sort ASC if they want to", () => {
+        return request(app)
+          .get("/api/reviews?order_by=ASC")
+          .expect(200)
+          .then((response) => {
+            const arr = response.body.reviews;
+            expect(arr).toBeSortedBy("created_at", { ascending: true });
+          });
+      });
+      it("should work even when the queries have extra keys that are not needed", () => {
+        return request(app)
+          .get("/api/reviews?category=euro+game&msg=1")
+          .expect(200)
+          .then((response) => {
+            const arr = response.body.reviews;
+            arr.forEach((review) => {
+              expect(review.category).toBe("euro game");
+            });
+          });
+      });
+      it("should allow all 3 queries to work at the same time", () => {
+        return request(app)
+          .get("/api/reviews?category=euro+game&sort_by=owner&order_by=ASC")
+          .expect(200)
+          .then((response) => {
+            const arr = response.body.reviews;
+            arr.forEach((review) => {
+              expect(review.category).toBe("euro game");
+            });
+            expect(arr).toBeSortedBy("owner", { ascending: true });
+          });
+      });
+    });
+  });
+  describe("/api/reviews/queries ERROR handling", () => {
+    it("should respond with a 404 if the category does not exist", () => {
+      return request(app)
+        .get("/api/reviews?category=fun")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("invalid category provided");
+        });
+    });
+    it("should respond with a 400 if the category provided is not a string", () => {
+      return request(app)
+        .get("/api/reviews?category=1")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("category needs to be a string");
+        });
+    });
+    it("should respond with a 404 if the sort_by column does not exist", () => {
+      return request(app)
+        .get("/api/reviews?sort_by=fun")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("invalid sort_by provided");
+        });
+    });
+    it("should respond with a 400 if passed a sort_by that is not a string", () => {
+      return request(app)
+        .get("/api/reviews?sort_by=1")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("sort by needs to be a string");
+        });
+    });
+    it("should respond with a 400 if passed a order by that is neither ASC or DESC", () => {
+      return request(app)
+        .get("/api/reviews?order_by=1")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("order by should be ASC or DESC");
+        });
+    });
+  });
 });
 
 describe("200: GET /api/reviews/:review_id/comments", () => {
@@ -213,10 +320,6 @@ describe("400 bad request incorrect id type", () => {
   });
 });
 
-
-
-
-
 describe("201: POST: should add a comment to the review", () => {
   it("should respond with the posted comment", () => {
     const testComment = {
@@ -238,16 +341,16 @@ describe("201: POST: should add a comment to the review", () => {
         });
       });
   });
-  it('201: should respond with the comment even if passed an object with extra keys', () => {
+  it("201: should respond with the comment even if passed an object with extra keys", () => {
     const testComment = {
       username: "bainesface",
       body: "i disagree with this review",
       votes: 10,
     };
     return request(app)
-    .post("/api/reviews/1/comments")
-    .send(testComment)
-    .expect(201)
+      .post("/api/reviews/1/comments")
+      .send(testComment)
+      .expect(201);
   });
 
   describe("Error handling", () => {
@@ -300,101 +403,103 @@ describe("201: POST: should add a comment to the review", () => {
   });
 });
 
-describe('200: Patch: should respond with the updated review object ', () => {
-  it('should respond with the correct review when updated', () => {
-    const voteObj = {inc_votes: 1}
-      return request(app)
-        .patch("/api/reviews/3")
-        .send(voteObj)
-        .expect(200)
-        .then((response) => {
-          const review = response.body.review
-          expect(review).toMatchObject({
-            review_id: 3,
-            owner: expect.any(String),
-            title: expect.any(String),
-            category: expect.any(String),
-            review_img_url: expect.any(String),
-            created_at: expect.any(String),
-            votes: expect.any(Number),
-            designer: expect.any(String),
-            review_body: expect.any(String),
-          })
-        })
-  });
-  it('should increase the count correctly when passed a positive number', () => {
-    const voteObj = {inc_votes: 1}
+describe("200: Patch: should respond with the updated review object ", () => {
+  it("should respond with the correct review when updated", () => {
+    const voteObj = { inc_votes: 1 };
     return request(app)
-        .patch("/api/reviews/3")
-        .send(voteObj)
-        .expect(200)
-        .then((response) => {
-          const review = response.body.review
-          expect(review.votes).toBe(6)
-        })
+      .patch("/api/reviews/3")
+      .send(voteObj)
+      .expect(200)
+      .then((response) => {
+        const review = response.body.review;
+        expect(review).toMatchObject({
+          review_id: 3,
+          owner: expect.any(String),
+          title: expect.any(String),
+          category: expect.any(String),
+          review_img_url: expect.any(String),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+          designer: expect.any(String),
+          review_body: expect.any(String),
+        });
+      });
   });
-  it('should decrease the count if passed a negative number', () => {
-    const voteObj = {inc_votes: -101}
+  it("should increase the count correctly when passed a positive number", () => {
+    const voteObj = { inc_votes: 1 };
     return request(app)
-        .patch("/api/reviews/3")
-        .send(voteObj)
-        .expect(200)
-        .then((response) => {
-          const review = response.body.review
-          expect(review.votes).toBe(-96)
-        })
+      .patch("/api/reviews/3")
+      .send(voteObj)
+      .expect(200)
+      .then((response) => {
+        const review = response.body.review;
+        expect(review.votes).toBe(6);
+      });
   });
-  it('should still work and respond with review when there are extra keys in the object', () => {
-    const voteObj = {inc_votes: -101, msg: "my votes to increase!"}
+  it("should decrease the count if passed a negative number", () => {
+    const voteObj = { inc_votes: -101 };
     return request(app)
-        .patch("/api/reviews/3")
-        .send(voteObj)
-        .expect(200)
-        .then((response) => {
-          const review = response.body.review
-          expect(review.votes).toBe(-96)
-        })
+      .patch("/api/reviews/3")
+      .send(voteObj)
+      .expect(200)
+      .then((response) => {
+        const review = response.body.review;
+        expect(review.votes).toBe(-96);
+      });
   });
-  describe('PATCH: Error handling', () => {
-    it('404: should respond with a 404 if passed an incorrect reviewID', () => {
-      const voteObj = {inc_votes: -101}
+  it("should still work and respond with review when there are extra keys in the object", () => {
+    const voteObj = { inc_votes: -101, msg: "my votes to increase!" };
+    return request(app)
+      .patch("/api/reviews/3")
+      .send(voteObj)
+      .expect(200)
+      .then((response) => {
+        const review = response.body.review;
+        expect(review.votes).toBe(-96);
+      });
+  });
+  describe("PATCH: Error handling", () => {
+    it("404: should respond with a 404 if passed an incorrect reviewID", () => {
+      const voteObj = { inc_votes: -101 };
       return request(app)
         .patch("/api/reviews/20")
         .send(voteObj)
         .expect(404)
         .then((response) => {
-          expect(response.body.msg).toBe("review id does not exist")
-        })
+          expect(response.body.msg).toBe("review id does not exist");
+        });
     });
-    it('400: should respond with a 400 error if passed a wrong format review id', () => {
-      const voteObj = {inc_votes: -101}
+    it("400: should respond with a 400 error if passed a wrong format review id", () => {
+      const voteObj = { inc_votes: -101 };
       return request(app)
         .patch("/api/reviews/test")
         .send(voteObj)
         .expect(400)
         .then((response) => {
-          expect(response.body.msg).toBe("bad request")
-        })
+          expect(response.body.msg).toBe("bad request");
+        });
     });
-    it('400: should respond with a 400 error if object does not contain inc_votes', () => {
-      const voteObj = {msg: -101}
+    it("400: should respond with a 400 error if object does not contain inc_votes", () => {
+      const voteObj = { msg: -101 };
       return request(app)
         .patch("/api/reviews/3")
         .send(voteObj)
         .expect(400)
         .then((response) => {
-          expect(response.body.msg).toBe("you need to provide a inc_votes object")
-        })
+          expect(response.body.msg).toBe(
+            "you need to provide a inc_votes object"
+          );
+        });
     });
-    it('400: should respond with a 400 error if the votes is not a number', () => {
-      const voteObj = {inc_votes: "asda"}
+    it("400: should respond with a 400 error if the votes is not a number", () => {
+      const voteObj = { inc_votes: "asda" };
       return request(app)
         .patch("/api/reviews/3")
         .send(voteObj)
         .expect(400)
         .then((response) => {
-          expect(response.body.msg).toBe("need to provide a number")
-        })
+          expect(response.body.msg).toBe("need to provide a number");
+        });
     });
   });
 });
