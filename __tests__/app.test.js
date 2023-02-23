@@ -220,6 +220,7 @@ describe("200: GET /api/users", () => {
       .expect(200)
       .then((response) => {
         const arr = response.body.users;
+        expect(arr.length).toBe(4)
         arr.forEach((user) => {
           expect(user).toMatchObject({
             username: expect.any(String),
