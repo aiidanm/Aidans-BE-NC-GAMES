@@ -320,6 +320,35 @@ describe("400 bad request incorrect id type", () => {
   });
 });
 
+describe("200: GET /api/users", () => {
+  it("should respond with an array of object containing username, name and avatar_url", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((response) => {
+        const arr = response.body.users;
+        expect(arr.length).toBe(4)
+        arr.forEach((user) => {
+          expect(user).toMatchObject({
+            username: expect.any(String),
+            name: expect.any(String),
+            avatar_url: expect.any(String),
+          });
+        });
+      });
+  });
+  describe("/api/users Error handling", () => {
+    it("404 should respond with 404 if passed an incorrect endpoint", () => {
+      return request(app)
+        .get("/api/user")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("incorrect endpoint");
+        });
+    });
+  });
+});
+
 describe("201: POST: should add a comment to the review", () => {
   it("should respond with the posted comment", () => {
     const testComment = {
