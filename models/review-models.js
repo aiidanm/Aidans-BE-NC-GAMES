@@ -62,7 +62,6 @@ exports.getAllReviews = (queries, allowedCategories) => {
 };
 
 exports.getReviewByID = (inputId) => {
-  
     return db
       .query(
         `
@@ -75,7 +74,6 @@ exports.getReviewByID = (inputId) => {
         [inputId]
       )
       .then((response) => {
-        
         const arr = response.rows;
         if (arr.length === 0) {
           return Promise.reject({ status: 404, msg: "id does not exist" });

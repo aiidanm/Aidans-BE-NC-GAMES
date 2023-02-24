@@ -26,3 +26,15 @@ exports.getReviewsComments = (review_id) => {
     [review_id]
   );
 };
+
+exports.deleteCommentByID = (comment_id) => {
+  
+    return db.query(`DELETE FROM comments WHERE comments.comment_id = $1 RETURNING *`, [comment_id]).then((response) => {
+      const arr = response.rows
+      if (arr.length === 0) {
+        return Promise.reject("comment id does not exist")
+      } else {
+        return response.rows[0]
+      }
+    })
+  }

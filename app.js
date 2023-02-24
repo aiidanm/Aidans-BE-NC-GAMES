@@ -12,11 +12,12 @@ const {
   handle500Errors,
   handleCustomErrors,
   handleQueryErrors,
+  handlePSQLErrors
 } = require("./controllers/errorControllers");
 
 const { fetchAllUsers } = require("./controllers/users-controllers");
 
-const { fetchReviewsComments } = require("./controllers/comments-controllers");
+const { fetchReviewsComments, deleteCommentByIDController } = require("./controllers/comments-controllers");
 
 const app = express();
 app.use(express.json());
@@ -42,11 +43,18 @@ app.get("/api/users", fetchAllUsers);
 
 app.patch("/api/reviews/:review_id", patchReviewController);
 
+app.delete("/api/comments/:comment_id", deleteCommentByIDController)
+
+app.patch("/api/reviews/:review_id", patchReviewController)
+
 app.post("/api/reviews/:review_id/comments", PostNewComment);
 
 app.all("*", handleIncorrectEndpointErrors);
 
 app.use(handleQueryErrors);
+app.use(handlePSQLErrors)
+
+app.use(handleQueryErrors)
 
 app.use(handleCustomErrors);
 
