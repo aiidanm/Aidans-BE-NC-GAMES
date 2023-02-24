@@ -1,12 +1,16 @@
-
 const { PostComment } = require("../models/comments-models");
 
-const { getAllReviews, getReviewByID, patchReviewModel, getReviewCategories } = require("../models/review-models");
+const {
+  getAllReviews,
+  getReviewByID,
+  patchReviewModel,
+  getReviewCategories,
+} = require("../models/review-models");
 
 exports.fetchAllReviews = (req, res, next) => {
-  const queries = req.query
+  const queries = req.query;
   getReviewCategories().then((response) => {
-    const cats = response.rows.map((item) => item.category)
+    const cats = response.rows.map((item) => item.category);
     getAllReviews(queries, cats)
       .then((reviews) => {
         res.status(200).send({ reviews: reviews.rows });
@@ -14,25 +18,29 @@ exports.fetchAllReviews = (req, res, next) => {
       .catch((error) => {
         next(error);
       });
-
-  })
+  });
 };
 
 exports.PostNewComment = (req, res, next) => {
   const { review_id } = req.params;
   const comment = req.body;
 
-  const ReviewPromise = getReviewByID(review_id);
-  const postCommentPromise = PostComment(review_id, comment);
-
-  Promise.all([ReviewPromise, postCommentPromise])
-    .then((response) => {
-      const comment = response[1].rows[0];
-      res.status(201).send({ comment });
+  getReviewByID(review_id)
+    .then(() => {
+      PostComment(review_id, comment)
+        .then((response) => {
+          const comment = response.rows[0];
+          res.status(201).send({ comment });
+        })
+        .catch((error) => {
+          next(error);
+        });
     })
     .catch((error) => {
       next(error);
     });
+
+
 };
 
 exports.fetchSingleReview = (req, res, next) => {
@@ -52,10 +60,10 @@ exports.patchReviewController = (req, res, next) => {
   const body = req.body;
   const patchPromise = patchReviewModel(review_id, body);
   const reviewIDPromise = getReviewByID(review_id);
-  
+
   Promise.all([reviewIDPromise, patchPromise])
     .then((response) => {
-      const review = response[1]
+      const review = response[1];
       res.status(200).send({ review });
     })
     .catch((error) => {

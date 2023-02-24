@@ -542,3 +542,32 @@ describe("200: Patch: should respond with the updated review object ", () => {
     });
   });
 });
+
+describe('204: DELETE. should respond delete comment and respond with a 204', () => {
+    it('should respond with status 204 and delete the comment', () => {
+        return request(app)
+          .delete("/api/comments/2")
+          .expect(204)
+
+    });
+    describe('Error handling', () => {
+        it('404 should respond with 404 error if passed an id that is valid but does not exist', () => {
+          return request(app)
+          .delete("/api/comments/200")
+          .expect(404)
+          .then((response) => {
+            const msg = response.body.msg
+            expect(msg).toBe("comment id does not exist")
+          })
+        });
+        it('should respond with a 400 error if passed a id that is not a string', () => {
+          return request(app)
+          .delete("/api/comments/aidans")
+          .expect(400)
+          .then((response) => {
+            const msg = response.body.msg
+            expect(msg).toBe("bad request")
+          })
+        });
+    });
+}); 
