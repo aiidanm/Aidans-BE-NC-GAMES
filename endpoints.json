@@ -30,5 +30,90 @@
         }
       ]
     }
+  },
+  "GET /api/reviews/:id": {
+    "description": "serves up a single review with a selected id",
+    "queries": [],
+    "exampleResponse": {
+      "review": {
+        "review_id": 3,
+        "title": "'Ultimate Werewolf'",
+        "category": "social deduction",
+        "designer": "Akihisa Okui",
+        "owner": "bainesface",
+        "review_body": "We couldn't find the werewolf!",
+        "review_img_url": "https://images.pexels.com/photos/5350049/pexels-photo-5350049.jpeg?w=700&h=700",
+        "created_at": "2021-01-18T10:01:41.251Z",
+        "votes": 5,
+        "comment_count": 3
+      }
+    }
+  },
+  "GET /api/reviews/:id/comments": {
+    "description": "returns an array of all comments on a review. Selected by inputting :id",
+    "queries": [],
+    "exampleResponse": {
+      "comments": [
+        {
+          "comment_id": 6,
+          "body": "Not sure about dogs, but my cat likes to get involved with board games, the boxes are their particular favourite",
+          "review_id": 3,
+          "author": "philippaclaire9",
+          "votes": 10,
+          "created_at": "2021-03-27T19:49:48.110Z"
+        }
+      ]
+    }
+  },
+  "GET /api/users": {
+    "description": "returns an array of all users in the database",
+    "queries": [],
+    "exampleresponse": {
+      "users": [
+        {
+          "username": "mallionaire",
+          "name": "haz",
+          "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+        }
+      ]
+    }
+  },
+  "PATCH: /api/reviews/id": {
+    "description": "increases / decreases a reviews votes by the specified amount in the body",
+    "queries": [],
+    "example send body": {
+      "inc_votes": 5
+    },
+    "exampleResponse": {
+      "review": {
+        "review_id": 3,
+        "title": "Ultimate Werewolf",
+        "category": "social deduction",
+        "designer": "Akihisa Okui",
+        "owner": "bainesface",
+        "review_body": "We couldn't find the werewolf!",
+        "review_img_url": "https://images.pexels.com/photos/5350049/pexels-photo-5350049.jpeg?w=700&h=700",
+        "created_at": "2021-01-18T10:01:41.251Z",
+        "votes": 10
+      }
+    }
+  },
+  "POST: /api/reviews/id/comments": {
+    "description": "posts a new comment to the review selected by the id parameter",
+    "queries": [],
+    "example send body": {
+      "username": "bainesface",
+      "body": "i disagree with this review"
+    },
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 7,
+        "body": "i disagree with this review",
+        "review_id": 1,
+        "author": "bainesface",
+        "votes": 0,
+        "created_at": "2023-02-23T16:25:27.237Z"
+      }
+    }
   }
 }
