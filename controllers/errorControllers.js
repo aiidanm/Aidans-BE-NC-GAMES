@@ -13,40 +13,33 @@ exports.handle500Errors = (error, req, res, next) => {
 exports.handlePSQLErrors = (error, req, res, next) => {
   if (error.code === "23503") {
     res.status(404).send({ msg: "review id does not exist" });
-    
   } else if (error.code === "22P02") {
     res.status(400).send({ msg: "bad request" });
-  } else {
-    next(error)
-  }
-};
-
-
-exports.handleCustomErrors = (error, req, res, next) => {
-  if (error === "comment id does not exist") {
-    res.status(404).send({ msg: "comment id does not exist" });
-
-  } else if (error === "body is not a string") {
-    res.status(400).send({ msg: "body needs to be a string" });
-
-  } else if (error === "body needs correct keys") {
-    res
-      .status(400)
-      .send({ msg: "comment needs to contain a username and body" });
-
-  } else if (error.msg === "id does not exist") {
-    res.status(404).send({ msg: "review id does not exist" });
-
-  } else if (error === "no inc_vote") {
-    res.status(400).send({ msg: "you need to provide a inc_votes object" });
-
-  } else if (error === "inc votes needs to be a number") {
-    res.status(400).send({ msg: "need to provide a number" });
-
   } else {
     next(error);
   }
 };
+
+exports.handleCustomErrors = (error, req, res, next) => {
+  if (error === "comment id does not exist") {
+    res.status(404).send({ msg: "comment id does not exist" });
+  } else if (error === "body is not a string") {
+    res.status(400).send({ msg: "body needs to be a string" });
+  } else if (error === "body needs correct keys") {
+    res
+      .status(400)
+      .send({ msg: "comment needs to contain a username and body" });
+  } else if (error.msg === "id does not exist") {
+    res.status(404).send({ msg: "review id does not exist" });
+  } else if (error === "no inc_vote") {
+    res.status(400).send({ msg: "you need to provide a inc_votes object" });
+  } else if (error === "inc votes needs to be a number") {
+    res.status(400).send({ msg: "need to provide a number" });
+  } else {
+    next(error);
+  }
+}
+
 
 exports.handleQueryErrors = (error, req, res, next) => {
   if (error === "category provided is not in array") {
