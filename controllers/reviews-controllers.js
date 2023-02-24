@@ -11,6 +11,7 @@ exports.fetchAllReviews = (req, res, next) => {
   const queries = req.query;
   getReviewCategories().then((response) => {
     const cats = response.rows.map((item) => item.category);
+
     getAllReviews(queries, cats)
       .then((reviews) => {
         res.status(200).send({ reviews: reviews.rows });
@@ -25,8 +26,6 @@ exports.PostNewComment = (req, res, next) => {
   const { review_id } = req.params;
   const comment = req.body;
 
-  getReviewByID(review_id)
-    .then(() => {
       PostComment(review_id, comment)
         .then((response) => {
           const comment = response.rows[0];
@@ -35,12 +34,6 @@ exports.PostNewComment = (req, res, next) => {
         .catch((error) => {
           next(error);
         });
-    })
-    .catch((error) => {
-      next(error);
-    });
-
-
 };
 
 exports.fetchSingleReview = (req, res, next) => {

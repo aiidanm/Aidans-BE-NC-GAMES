@@ -58,7 +58,7 @@ exports.getAllReviews = (queries, allowedCategories) => {
   } else {
     queryString += ` WHERE reviews.category = '${queries.category}' GROUP BY reviews.review_id ORDER BY ${queries.sort_by} ${queries.order_by};`;
   }
-  return db.query(queryString);
+  return db.query(queryString)
 };
 
 exports.getReviewByID = (inputId) => {

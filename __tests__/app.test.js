@@ -173,6 +173,7 @@ describe("200: GET /api/reviews", () => {
         .get("/api/reviews?category=1")
         .expect(400)
         .then((response) => {
+
           expect(response.body.msg).toBe("category needs to be a string");
         });
     });
