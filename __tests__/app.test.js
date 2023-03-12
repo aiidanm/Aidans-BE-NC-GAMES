@@ -12,7 +12,7 @@ afterAll(() => {
   return db.end();
 });
 
-describe("200: GET /api/categories", () => {
+describe.only("200: GET /api/categories", () => {
   it("should respond with an array of categories", () => {
     return request(app)
       .get("/api/categories")
