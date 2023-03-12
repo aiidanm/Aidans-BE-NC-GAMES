@@ -1,60 +1,46 @@
 const express = require("express");
 const fs = require("fs/promises");
-const { fetchallCategories } = require("./controllers/categoryControllers");
-const {
-  fetchSingleReview,
-  fetchAllReviews,
-  patchReviewController,
-  PostNewComment,
-} = require("./controllers/reviews-controllers");
+
 const {
   handleIncorrectEndpointErrors,
   handle500Errors,
   handleCustomErrors,
   handleQueryErrors,
-  handlePSQLErrors
+  handlePSQLErrors,
 } = require("./controllers/errorControllers");
 
 const { fetchAllUsers } = require("./controllers/users-controllers");
 
-const { fetchReviewsComments, deleteCommentByIDController } = require("./controllers/comments-controllers");
+const {
+  fetchReviewsComments,
+  deleteCommentByIDController,
+} = require("./controllers/comments-controllers");
+
+const apiRouter = require("./routers/api-router");
+const userRouter = require("./routers/users-router");
+const categoryRouter = require("./routers/category-router");
+const reviewRouter = require("./routers/reviews-router");
+const commentRouter = require("./routers/comment-router")
 
 const app = express();
 app.use(express.json());
 
-app.use(express.json());
+app.use(`/api`, apiRouter);
 
-app.get("/api", (req, res, next) => {
-  fs.readFile(`${__dirname}/endpoints.json`).then((data) => {
-    const endpoints = JSON.parse(data)
-    res.status(200).send({endpoints})
-  })
-});
+app.use(`/api/users`, userRouter);
 
-app.get("/api/categories", fetchallCategories);
+app.use(`/api/categories`, categoryRouter);
 
-app.get("/api/reviews", fetchAllReviews);
+app.use(`/api/reviews`, reviewRouter);
 
-app.get("/api/reviews/:review_id", fetchSingleReview);
-
-app.get("/api/reviews/:review_id/comments", fetchReviewsComments);
-
-app.get("/api/users", fetchAllUsers);
-
-app.patch("/api/reviews/:review_id", patchReviewController);
-
-app.delete("/api/comments/:comment_id", deleteCommentByIDController)
-
-app.patch("/api/reviews/:review_id", patchReviewController)
-
-app.post("/api/reviews/:review_id/comments", PostNewComment);
+app.use("/api/comments", commentRouter);
 
 app.all("*", handleIncorrectEndpointErrors);
 
 app.use(handleQueryErrors);
-app.use(handlePSQLErrors)
+app.use(handlePSQLErrors);
 
-app.use(handleQueryErrors)
+app.use(handleQueryErrors);
 
 app.use(handleCustomErrors);
 
