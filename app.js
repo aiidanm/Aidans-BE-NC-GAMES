@@ -1,5 +1,7 @@
 const express = require("express");
 const fs = require("fs/promises");
+const cors = require(`cors`);
+
 
 const {
   handleIncorrectEndpointErrors,
@@ -23,6 +25,7 @@ const reviewRouter = require("./routers/reviews-router");
 const commentRouter = require("./routers/comment-router")
 
 const app = express();
+app.use(cors())
 app.use(express.json());
 
 app.use(`/api`, apiRouter);
