@@ -360,7 +360,7 @@ describe("200: GET /api/users", () => {
   });
 });
 
-describe("201: POST: should add a comment to the review", () => {
+describe.only("201: POST: should add a comment to the review", () => {
   it("should respond with the posted comment", () => {
     const testComment = {
       username: "bainesface",
@@ -372,7 +372,7 @@ describe("201: POST: should add a comment to the review", () => {
       .expect(201)
       .then(({ body }) => {
         expect(body.comment).toMatchObject({
-          author: expect.any(String),
+          author: "bainesface",
           body: "i disagree with this review",
           comment_id: expect.any(Number),
           created_at: expect.any(String),

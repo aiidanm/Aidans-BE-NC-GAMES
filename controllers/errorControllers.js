@@ -12,7 +12,7 @@ exports.handle500Errors = (error, req, res, next) => {
 
 exports.handlePSQLErrors = (error, req, res, next) => {
   if (error.code === "23503") {
-    res.status(404).send({ msg: "review id does not exist" });
+    res.status(404).send({ msg: "review id does not exist", psqlerr: error });
   } else if (error.code === "22P02") {
     res.status(400).send({ msg: "bad request" });
   } else {
